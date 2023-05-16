@@ -4,23 +4,35 @@ const commentText = document.querySelector('.add-form-text');
 const commentsList = document.querySelector('.comments');
 const addForm = document.querySelector('.add-form');
 
-const comments = [
-    {
-        name: "Глеб Фокин",
-        date: "12.02.22 12:18",
-        text: "Это будет первый комментарий на этой странице",
-        likes: "3",
-        likeStatus: '',
-    },
+let comments = [];
 
-    {
-        name: "Варвара Н.",
-        date: "13.02.22 19:22",
-        text: "Мне нравится как оформлена эта страница! ❤",
-        likes: "75",
-        likeStatus: '',
-    },
-];
+function getData () {
+    const fetchPromise = fetch("https://webdev-hw-api.vercel.app/api/v1/daria/comments", {
+        method: "GET",
+    });
+
+    fetchPromise.then((response) => {
+        const jsonPromise = response.json();
+    
+        jsonPromise.then((responseData) => {
+            const appComments = responseData.comments.map((comment) => {
+                return {
+                    name: comment.author.name,
+                    date: new Date(comment.date).toLocaleString().slice(0,-3),
+                    text: comment.text,
+                    likes: comment.likes,
+                    likeStatus: false,
+                }
+            })
+    
+            comments = appComments;
+            renderComments();       
+        })
+    })
+}
+
+getData();
+
 
 const initLikesButton = () => {
     const likesButtons = document.querySelectorAll('.like-button');
@@ -46,20 +58,6 @@ const initLikesButton = () => {
             }
 
             renderComments();
-
-            // const target = event.target;
-            // const status = target.dataset.status;
-            // const value = +target.previousElementSibling.textContent;
-
-            // if (status === "false") {
-            //     target.previousElementSibling.textContent = value + 1;
-            //     target.dataset.status = "true";
-            //     likesButton.classList.add('-active-like');
-            // } else {
-            //     target.previousElementSibling.textContent = value - 1;
-            //     target.dataset.status = "false";
-            //     likesButton.classList.remove('-active-like');
-            // }
         })
     }
 }
@@ -82,20 +80,33 @@ const addReply = () => {
     }
 }
 
-// const editComment = () => {
-//     const editButtons = document.querySelectorAll('.edit-button');
+function formatDate() {
+    const commentDate = new Date();
+    const year = commentDate.getFullYear() % 100;
 
-//     for (const editButton of editButtons) {
+    let month = commentDate.getMonth() + 1;
+    if (month < 10) {
+        month = '0' + month;
+    }
 
-//         editButton.addEventListener('click', (event) => {
-//             console.log ('comments[index].text')
-//             event.stopPropagation();
+    let day = commentDate.getDate();
+    if (day < 10) {
+        day = '0' + day;
+    }
 
-//         })
-//         renderComments();
-//     }
+    let hours = commentDate.getHours();
+    if (hours < 10) {
+        hours = '0' + hours;
+    }
 
-// }
+    let minutes = commentDate.getMinutes();
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+
+    const currentDate = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+    return currentDate;
+}
 
 const renderComments = () => {
     const commentsHtml = comments.map((comment, index) => {
@@ -133,10 +144,58 @@ const renderComments = () => {
 
     initLikesButton();
     addReply();
-    // editComment();
 }
 
 renderComments();
+
+const addToServer = (comment) => {
+    
+    fetch ("https://webdev-hw-api.vercel.app/api/v1/daria/comments", {
+        method: "POST",
+        body: JSON.stringify(comment)
+    }).then((response) => {
+        const jsonPromise = response.json();
+        
+        jsonPromise.then((responseData) => {
+            console.log(responseData);
+        })
+
+        getData();
+    })
+}
+
+const addToList = () => {
+
+    commentName.classList.remove('error');
+    if (commentName.value === '') {
+        commentName.classList.add('error');
+        return;
+    }
+
+    commentText.classList.remove('error');
+    if (commentText.value === '') {
+        commentText.classList.add('error');
+        return;
+    }
+
+    const newComment = {
+        name: commentName.value
+        .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+        text: commentText.value
+        .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+        date:     formatDate(),
+        like: 0,
+        likeStatus: false,
+    }
+
+    console.log(newComment);
+
+    addToServer(newComment);
+
+    commentName.value = '';
+    commentText.value = '';
+    addButton.setAttribute('disabled', '');
+}
 
 addButton.setAttribute('disabled', '');
 
@@ -155,134 +214,19 @@ commentText.addEventListener('input', () => {
 })
 
 addButton.addEventListener('click', () => {
-    showNewComment();
+    addToList();
 })
 
 addForm.addEventListener('keyup', (event) => {
     if (event.keyCode === 13) {
-        showNewComment();
+        addToList();
     }
 })
-
-function showNewComment() {
-    commentName.classList.remove('error');
-    if (commentName.value === '') {
-        commentName.classList.add('error');
-        return;
-    }
-
-    commentText.classList.remove('error');
-    if (commentText.value === '') {
-        commentText.classList.add('error');
-        return;
-    }
-
-    const commentDate = new Date();
-    const year = commentDate.getFullYear() % 100;
-
-    let month = commentDate.getMonth() + 1;
-    if (month < 10) {
-        month = '0' + month;
-    }
-
-    let day = commentDate.getDate();
-    if (day < 10) {
-        day = '0' + day;
-    }
-
-    let hours = commentDate.getHours();
-    if (hours < 10) {
-        hours = '0' + hours;
-    }
-
-    let minutes = commentDate.getMinutes();
-    if (minutes < 10) {
-        minutes = '0' + minutes;
-    }
-
-    const currentDate = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
-
-    const oldListHtml = commentsList.innerHTML;
-
-    comments.push({
-        name: commentName.value,
-        date: currentDate,
-        text: commentText.value,
-        likes: 0,
-    });
-
-    renderComments();
-
-    // commentsList.innerHTML = oldListHtml + 
-    //     `<li class="comment">
-    //         <div class="comment-header">
-    //             <div>${commentName.value} </div>
-    //             <div>${currentDate} </div>
-    //         </div>
-    //         <div class="comment-body"> 
-    //             <div class="comment-text">${commentText.value}</div>
-    //         </div>
-    //         <div class="comment-footer"> 
-    //             <div class="likes">
-    //                 <span class="likes-counter">0</span>
-    //                 <button class="like-button"</button>
-    //             </div>
-    //         </div> 
-    //     </li>`
-
-    // const newCommentBlock = document.createElement('li');
-    // newCommentBlock.classList.add('comment');
-    // const newCommentHeader = document.createElement('div');
-    // newCommentHeader.classList.add('comment-header');
-    // const newCommentBody = document.createElement('div');
-    // newCommentBody.classList.add('comment-body');
-
-    // const newCommentName = document.createElement('div');
-    // const newCommentText = document.createElement('div');
-    // commentsList.appendChild(newCommentBlock);
-    // newCommentBlock.appendChild(newCommentHeader);
-    // newCommentBlock.appendChild(newCommentBody);
-
-    // newCommentName.textContent = commentName.value;
-    // newCommentHeader.appendChild(newCommentName);
-
-
-    // newCommentText.textContent = commentText.value;
-    // newCommentBody.appendChild(newCommentText);
-    // newCommentText.classList.add('comment-text');
-
-    // const dateBlock = document.createElement('div');
-    // dateBlock.textContent = currentDate;
-    // newCommentHeader.appendChild(dateBlock);
-
-    // const commentFooter = document.createElement('div');
-    // commentFooter.classList.add('comment-footer');
-    // newCommentBlock.appendChild(commentFooter);
-
-    // const likesBlock = document.createElement('div');
-    // likesBlock.classList.add('likes');
-    // commentFooter.appendChild(likesBlock);
-
-    // const likesCounter = document.createElement('span');
-    // likesCounter.classList.add('likes-counter');
-    // likesBlock.appendChild(likesCounter);
-    // likesCounter.textContent = '0';
-
-    // const likeButton = document.createElement('button');
-    // likeButton.classList.add('like-button');
-    // likesBlock.appendChild(likeButton);
-
-    commentName.value = '';
-    commentText.value = '';
-    addButton.setAttribute('disabled', '');
-}
 
 const removeButton = document.querySelector('.remove-form-button');
 
 removeButton.addEventListener('click', () => {
-    // const removedElement = commentsList.lastElementChild;
-    // removedElement.remove();
+
     comments.pop();
     renderComments();
 });
-
