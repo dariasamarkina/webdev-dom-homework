@@ -3,36 +3,59 @@ const commentName = document.querySelector('.add-form-name');
 const commentText = document.querySelector('.add-form-text');
 const commentsList = document.querySelector('.comments');
 const addForm = document.querySelector('.add-form');
+const container = document.querySelector('.container');
+
+const loadingMessage = document.createElement('h3');
+loadingMessage.classList.add('hidden');
+loadingMessage.textContent = 'Список комментариев загружается...';
+container.prepend(loadingMessage);
+
+const postMessage = document.createElement('h3');
+postMessage.classList.add('hidden');
+postMessage.textContent = 'Комментарий публикуется...';
+container.appendChild(postMessage);
 
 let comments = [];
 
 function getData () {
-    const fetchPromise = fetch("https://webdev-hw-api.vercel.app/api/v1/daria/comments", {
-        method: "GET",
-    });
 
-    fetchPromise.then((response) => {
-        const jsonPromise = response.json();
-    
-        jsonPromise.then((responseData) => {
-            const appComments = responseData.comments.map((comment) => {
+    fetch("https://webdev-hw-api.vercel.app/api/v1/daria/comments", {
+        method: "GET",
+    })
+        .then((response) => {
+            return response.json();
+        })
+            .then((responseData) => {
+                const appComments = responseData.comments.map((comment) => {
                 return {
-                    name: comment.author.name,
-                    date: new Date(comment.date).toLocaleString().slice(0,-3),
-                    text: comment.text,
-                    likes: comment.likes,
-                    likeStatus: false,
+                        name: comment.author.name,
+                        date: new Date(comment.date).toLocaleString().slice(0,-3),
+                        text: comment.text,
+                        likes: comment.likes,
+                        likeStatus: false,
                 }
             })
-    
+        
             comments = appComments;
-            renderComments();       
+            renderComments();  
+
+            loadingMessage.classList.add('hidden');
+            addForm.classList.remove('hidden');
+            postMessage.classList.add('hidden');
         })
-    })
 }
 
-getData();
+function startPage() {
+    commentsList.classList.add('hidden');
+    loadingMessage.classList.add('message');
+    loadingMessage.classList.remove('hidden');
 
+    getData();
+
+    commentsList.classList.remove('hidden');
+}
+
+startPage();
 
 const initLikesButton = () => {
     const likesButtons = document.querySelectorAll('.like-button');
@@ -154,14 +177,12 @@ const addToServer = (comment) => {
         method: "POST",
         body: JSON.stringify(comment)
     }).then((response) => {
-        const jsonPromise = response.json();
-        
-        jsonPromise.then((responseData) => {
-            console.log(responseData);
-        })
-
-        getData();
+        return response.json();
     })
+    .then((responseData) => {
+            console.log(responseData);
+            return getData();
+        })
 }
 
 const addToList = () => {
@@ -188,8 +209,6 @@ const addToList = () => {
         likeStatus: false,
     }
 
-    console.log(newComment);
-
     addToServer(newComment);
 
     commentName.value = '';
@@ -213,8 +232,13 @@ commentText.addEventListener('input', () => {
         return;
 })
 
-addButton.addEventListener('click', () => {
+addButton.addEventListener('click', (e) => {
+
+    addForm.classList.add('hidden');
+    postMessage.classList.remove('hidden');
+    
     addToList();
+
 })
 
 addForm.addEventListener('keyup', (event) => {
