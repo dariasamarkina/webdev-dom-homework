@@ -31,7 +31,6 @@ console.log(removeButton);
 console.log(loginButton);
 
 
-
 startPage();
 
 function startPage() {
@@ -65,7 +64,9 @@ commentText.addEventListener('input', () => {
         return;
 })
 
-addButton.addEventListener('click', (e) => {
+addButton.addEventListener('click', () => {
+
+    console.log('add');
 
     addForm.classList.add('hidden');
     postMessage.classList.remove('hidden');
@@ -85,9 +86,8 @@ addForm.addEventListener('keyup', (event) => {
     }
 })
 
-// const removeButton = document.querySelector('.remove-form-button');
-
 removeButton.addEventListener('click', () => {
+    console.log('remove');
     appComments.pop();
     renderComments(appComments);
 });
