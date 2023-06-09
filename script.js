@@ -1,5 +1,5 @@
 // import { renderComments } from "./render.js";
-// import { getData } from "./api.js";
+import { getData } from "./api.js";
 // import { addToList } from "./api.js";
 // import { appComments } from "./api.js";
 // import { initLikesButton } from "./like-button.js";
@@ -191,7 +191,7 @@ const addToServer = (comment) => {
         })
         .then((responseData) => {
             console.log(responseData);
-            return getData().then((comments => renderComments(comments)));
+            return getData({ token }).then((comments => renderComments(comments)));
         })
         .catch((error) => {
             console.log('Ошибка при отправке комментария на сервер:', error);
@@ -264,8 +264,9 @@ const addToList = () => {
 // postMessage.classList.add('hidden');
 // postMessage.textContent = 'Комментарий публикуется...';
 // container.appendChild(postMessage);
-renderComments(appComments);
-// startPage();
+
+// renderComments(appComments);
+startPage();
 
 
 
@@ -274,7 +275,7 @@ function startPage() {
     // loadingMessage.classList.add('message');
     // loadingMessage.classList.remove('hidden');
 
-    getData().then((comments => renderComments(comments)));
+    getData({ token }).then((comments => renderComments(comments)));
     
     // loadingMessage.classList.add('hidden');
     // addForm.classList.remove('hidden');
@@ -284,7 +285,7 @@ function startPage() {
 
 }
 
-renderComments(appComments);
+// renderComments(appComments);
 
 // addButton.setAttribute('disabled', '');
 
@@ -336,32 +337,32 @@ renderComments(appComments);
 
 
 
-function getData() {
+// function getData() {
 
-    return fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
-        method: "GET",
-        headers: {
-            Authorization: token,
-        }
-    })
-        .then((response) => {
-            return response.json();
-        })
-        .then((responseData) => {
-            appComments = responseData.comments.map((comment) => {
+//     return fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
+//         method: "GET",
+//         headers: {
+//             Authorization: token,
+//         }
+//     })
+//         .then((response) => {
+//             return response.json();
+//         })
+//         .then((responseData) => {
+//             appComments = responseData.comments.map((comment) => {
 
-                return {
-                    name: comment.author.name,
-                    date: new Date(comment.date).toLocaleString().slice(0, -3),
-                    text: comment.text,
-                    likes: comment.likes,
-                    likeStatus: false,
-                }
-            })
-            console.log(appComments);
-            return appComments;
-        })
-}
+//                 return {
+//                     name: comment.author.name,
+//                     date: new Date(comment.date).toLocaleString().slice(0, -3),
+//                     text: comment.text,
+//                     likes: comment.likes,
+//                     likeStatus: false,
+//                 }
+//             })
+//             console.log(appComments);
+//             return appComments;
+//         })
+// }
 
 // const addToServer = (comment) => {
 

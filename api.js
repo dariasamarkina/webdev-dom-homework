@@ -7,37 +7,37 @@
 // // import { renderComments } from "./render.js";
 // import { renderComments } from "./script.js";
 
-// export let appComments = [];
+export let appComments = [];
 
 // let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
 
-// export function getData() {
+export function getData( { token }) {
 
-//     return fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
-//         method: "GET",
-//         headers: {
-//             Authorization: token,
-//         }
-//     })
-//         .then((response) => {
-//             return response.json();
-//         })
-//         .then((responseData) => {
-//             appComments = responseData.comments.map((comment) => {
+    return fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
+        method: "GET",
+        headers: {
+            Authorization: token,
+        }
+    })
+        .then((response) => {
+            return response.json();
+        })
+        .then((responseData) => {
+            appComments = responseData.comments.map((comment) => {
 
-//                 return {
-//                     name: comment.author.name,
-//                     date: new Date(comment.date).toLocaleString().slice(0, -3),
-//                     text: comment.text,
-//                     likes: comment.likes,
-//                     likeStatus: false,
-//                 }
-//             })
-//             console.log(appComments);
-//             return appComments;
-//         })
+                return {
+                    name: comment.author.name,
+                    date: new Date(comment.date).toLocaleString().slice(0, -3),
+                    text: comment.text,
+                    likes: comment.likes,
+                    likeStatus: false,
+                }
+            })
+            console.log(appComments);
+            return appComments;
+        })
 
-// }
+}
 
 // export const addToServer = (comment) => {
 
