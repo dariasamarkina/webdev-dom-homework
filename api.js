@@ -3,13 +3,13 @@
 // import { addForm } from "./script.js";
 // import { addButton } from "./script.js";
 // import { loadingMessage } from "./script.js";
-// import { formatDate } from "./format-date.js";
-// // import { renderComments } from "./render.js";
+import { formatDate } from "./format-date.js";
+import { renderComments } from "./script.js";
 // import { renderComments } from "./script.js";
 
 export let appComments = [];
 
-// let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+
 
 export function getData( { token }) {
 
@@ -39,87 +39,51 @@ export function getData( { token }) {
 
 }
 
-// export const addToServer = (comment) => {
+export const addToServer = ({ newComment, token, loadingMessage, addButton, addForm, commentName, commentText}) => {
 
-//     const savedName = commentName.value;
-//     const savedText = commentText.value;
+    console.log(commentName, commentText)
+    const savedName = commentName.value;
+    const savedText = commentText.value;
 
-//     fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
-//         method: "POST",
-//         body: JSON.stringify({
-//             name: commentName.value
-//                 .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-//             text: commentText.value
-//                 .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-//             forceError: true,
-//         }),
-//         headers: {
-//             Authorization: token,
-//         }
-//     })
-//         .then((response) => {
-//             if (!response.ok) {
-//                 if (response.status === 500) {
-//                     throw new Error('Сервер упал');
-//                 }
-//                 if (response.status === 400) {
-//                     throw new Error('Ошибка ввода');
-//                 }  
-//             }
+    fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
+        method: "POST",
+        body: JSON.stringify (newComment),
+        headers: {
+            Authorization: token,
+        }
+    })
+        .then((response) => {
+            if (!response.ok) {
+                if (response.status === 500) {
+                    throw new Error('Сервер упал');
+                }
+                if (response.status === 400) {
+                    throw new Error('Ошибка ввода');
+                }  
+            }
 
-//             return response.json();
-//         })
-//         .then((responseData) => {
-//             console.log(responseData);
-//             return getData().then((comments => renderComments(comments)));
-//         })
-//         .catch((error) => {
-//             console.log('Ошибка при отправке комментария на сервер:', error);
+            return response.json();
+        })
+        .then((responseData) => {
+            console.log(responseData);
+            return getData({ token }).then((comments => renderComments(comments)));
+        })
+        .catch((error) => {
+            console.log('Ошибка при отправке комментария на сервер:', error);
 
-//             if (error.message === 'Ошибка ввода') {
-//                 alert('Имя и сообщение должны быть не короче 3 символов');
-//             } else if (error.message === 'Сервер упал') {
-//                 alert('Сервер сломался, попробуйте позже');
-//             } else {
-//                 alert('Кажется, у вас сломался интернет, попробуйте позже');
-//             }
+            if (error.message === 'Ошибка ввода') {
+                alert('Имя и сообщение должны быть не короче 3 символов');
+            } else if (error.message === 'Сервер упал') {
+                alert('Сервер сломался, попробуйте позже');
+            } else {
+                alert('Кажется, у вас сломался интернет, попробуйте позже');
+            }
 
-//             commentName.value = savedName;
-//             commentText.value = savedText;
-//             addForm.classList.remove('hidden');
-//             addButton.removeAttribute('disabled')
-//             loadingMessage.classList.add('hidden');
-//         });
+            commentName.value = savedName;
+            commentText.value = savedText;
+            addForm.classList.remove('hidden');
+            addButton.removeAttribute('disabled')
+            loadingMessage.classList.add('hidden');
+        });
 
-// }
-
-// export const addToList = () => {
-
-//     commentName.classList.remove('error');
-//     if (commentName.value === '') {
-//         commentName.classList.add('error');
-//         return;
-//     }
-
-//     commentText.classList.remove('error');
-//     if (commentText.value === '') {
-//         commentText.classList.add('error');
-//         return;
-//     }
-
-//     const newComment = {
-//         name: commentName.value
-//             .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-//         text: commentText.value
-//             .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-//         date: formatDate(),
-//         like: 0,
-//         likeStatus: false,
-//     }
-
-//     addToServer(newComment);
-
-//     commentName.value = '';
-//     commentText.value = '';
-//     addButton.setAttribute('disabled', '');
-// }
+}
