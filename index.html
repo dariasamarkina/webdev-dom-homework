@@ -8,10 +8,35 @@
 
   <body>
     <div class="container">
-      
+      <ul class="comments">
+
+       
+      </ul>
+      <div class="add-form">
+        <input
+          type="text"
+          class="add-form-name"
+          placeholder="Введите ваше имя"
+        />
+        <textarea
+          type="textarea"
+          class="add-form-text"
+          placeholder="Введите ваш коментарий"
+          rows="4"
+        ></textarea>
+        <div class="add-form-row">
+          <button class="remove-form-button">Удалить последний комментарий</button>
+          <button class="add-form-button">Написать</button>
+        </div>
+      </div>
     </div>
   </body>
 
   <script type="module" src="script.js"></script>
+  <script type="module" src="render.js"></script>
+  <script type="module" src="like-button.js"></script>
+  <script type="module" src="add-reply.js"></script>
+  <script type="module" src="api.js"></script>
+  <script type="module" src="format-date.js"></script>
 
 </html>
