@@ -1,6 +1,7 @@
 // import { renderComments } from "./render.js";
 import { getData } from "./api.js";
 import { addToServer } from "./api.js";
+import { renderLoginForm } from "./components/login-component.js";
 // import { appComments } from "./api.js";
 // import { initLikesButton } from "./like-button.js";
 // import { addReply } from "./add-reply.js";
@@ -15,34 +16,11 @@ token = null;
 export const renderComments = (comm) => {
 
     if (!token) {
-        const appHtml = `
-                <div class="login-form">
-                    <input
-                        type="text"
-                        class="login-form-login"
-                        placeholder="Логин"
-                    />
-                    <input
-                        type="password"
-                        class="login-form-password"
-                        placeholder="Пароль"
-                    />
-                    <div class="login-form-row">
-                        <button class="login-form-enter">Войти</button>
-                        <button class="login-form-toreg">Перейти к регистрации</button>
-                    </div>
-                </div>`
+        renderLoginForm( {container, setToken: (newToken) => {
+            token = newToken;
+        }, startPage})
 
-    container.innerHTML = appHtml;
-
-    const enterButton = document.querySelector('.login-form-enter');
-    enterButton.addEventListener('click', () => {
-        token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
-        startPage()
-        
-    })    
-
-    return;
+        return;
     }
 
     const commentsHtml = comm.map((comment, index) => {
