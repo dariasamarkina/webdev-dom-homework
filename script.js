@@ -3,7 +3,7 @@ import { getData } from "./api.js";
 import { addToServer } from "./api.js";
 import { renderLoginForm } from "./components/login-component.js";
 // import { appComments } from "./api.js";
-// import { initLikesButton } from "./like-button.js";
+import { initLikesButton } from "./like-button.js";
 // import { addReply } from "./add-reply.js";
 
 import { formatDate } from "./format-date.js";
@@ -168,7 +168,7 @@ export const renderComments = (comm) => {
         addButton.setAttribute('disabled', '');
     }
 
-    // initLikesButton();
+    initLikesButton();
     // addReply();
 }
 
