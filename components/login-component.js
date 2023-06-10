@@ -1,3 +1,5 @@
+import { loginUser } from "../api.js";
+
 export function renderLoginForm ({ container, setToken, startPage}) {
     const appHtml = `
     <div class="login-form">
@@ -22,8 +24,13 @@ container.innerHTML = appHtml;
 const enterButton = document.querySelector('.login-form-enter');
 enterButton.addEventListener('click', () => {
 
-setToken("Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k");
-startPage();
-
+loginUser({
+    login: "admin",
+    password: "admin"
+}).then((user) => {
+    console.log(user);
+    setToken(`Bearer ${user.user.token}`);
+    startPage();
+})
 })    
 }
