@@ -1,9 +1,9 @@
 import { appComments } from "./api.js";
 import { renderComments } from "./script.js";
-import { commentText } from "./script.js";
 
-export const addReply = () => {
-    
+
+export const addReply = ({ commentText}) => {
+
     const commentsElements = document.querySelectorAll('.comment');
 
     for (const commentsElement of commentsElements) {

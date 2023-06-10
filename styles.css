@@ -264,7 +264,8 @@ body {
   }
 
   .login-form-login,
-  .login-form-password {
+  .login-form-password,
+  .login-form-name {
     height: 40px;
     width: 360px;
     font-size: 16px;
