@@ -41,7 +41,6 @@ export function getData( { token }) {
 
 export const addToServer = ({ newComment, token, loadingMessage, addButton, addForm, commentName, commentText}) => {
 
-    console.log(commentName, commentText)
     const savedName = commentName.value;
     const savedText = commentText.value;
 
@@ -96,6 +95,9 @@ export function loginUser ( { login, password }) {
             password
         }),
     }).then((response) => {
+        if (response.status === 400) {
+            throw new Error ('Неверный логин или пароль');
+        }
         return response.json();
     })
 }

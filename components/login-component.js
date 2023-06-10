@@ -24,13 +24,26 @@ container.innerHTML = appHtml;
 const enterButton = document.querySelector('.login-form-enter');
 enterButton.addEventListener('click', () => {
 
+    const loginValue = document.querySelector('.login-form-login').value;
+    const passwordValue = document.querySelector('.login-form-password').value;
+
+    if (!loginValue) {
+        alert ('Введите логин');
+        return;
+    }
+    if (!passwordValue) {
+        alert ('Введите пароль');
+        return;
+    }
+
 loginUser({
-    login: "admin",
-    password: "admin"
-}).then((user) => {
-    console.log(user);
-    setToken(`Bearer ${user.user.token}`);
-    startPage();
-})
-})    
+    login: loginValue,
+    password: passwordValue
+    }).then((user) => {
+        setToken(`Bearer ${user.user.token}`);
+        startPage();
+        }).catch(error => {
+            alert(error.message);
+        })
+    })    
 }
