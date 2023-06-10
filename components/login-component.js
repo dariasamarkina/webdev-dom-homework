@@ -1,4 +1,4 @@
-import { loginUser } from "../api.js";
+import { loginUser, addUser } from "../api.js";
 
 export function renderLoginForm ({ container, setToken, startPage}) {
     let isLoginMode = true;
@@ -38,28 +38,61 @@ export function renderLoginForm ({ container, setToken, startPage}) {
     
     const enterButton = document.querySelector('.login-form-enter');
     enterButton.addEventListener('click', () => {
-    
-        const loginValue = document.querySelector('.login-form-login').value;
-        const passwordValue = document.querySelector('.login-form-password').value;
-    
-        if (!loginValue) {
-            alert ('Введите логин');
-            return;
+        if (isLoginMode) {
+            const loginValue = document.querySelector('.login-form-login').value;
+            const passwordValue = document.querySelector('.login-form-password').value;
+        
+            if (!loginValue) {
+                alert ('Введите логин');
+                return;
+            }
+            if (!passwordValue) {
+                alert ('Введите пароль');
+                return;
+            }
+
+            loginUser({
+                login: loginValue,
+                password: passwordValue
+                }).then((user) => {
+                    setToken(`Bearer ${user.user.token}`);
+                    startPage();
+                    }).catch(error => {
+                        alert(error.message);
+                    })
+        } else {
+            const nameValue = document.querySelector('.login-form-name').value;
+            const loginValue = document.querySelector('.login-form-login').value;
+            const passwordValue = document.querySelector('.login-form-password').value;
+        
+            if (!nameValue) {
+                alert ('Введите имя');
+                return;
+            }
+            if (!loginValue) {
+                alert ('Введите логин');
+                return;
+            }
+            if (!passwordValue) {
+                alert ('Введите пароль');
+                return;
+            }
+
+            addUser({
+                login: loginValue,
+                name: nameValue,
+                password: passwordValue
+                }).then((user) => {
+                    setToken(`Bearer ${user.user.token}`);
+                    startPage();
+                    }).catch(error => {
+                        alert(error.message);
+                    })
         }
-        if (!passwordValue) {
-            alert ('Введите пароль');
-            return;
-        }
     
-    loginUser({
-        login: loginValue,
-        password: passwordValue
-        }).then((user) => {
-            setToken(`Bearer ${user.user.token}`);
-            startPage();
-            }).catch(error => {
-                alert(error.message);
-            })
+
+    
+
         }) 
     }
 
