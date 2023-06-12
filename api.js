@@ -1,17 +1,23 @@
-import { commentText } from "./script.js";
-import { commentName } from "./script.js";
-import { addForm } from "./script.js";
-import { addButton } from "./script.js";
-import { loadingMessage } from "./script.js";
+// import { commentText } from "./script.js";
+// import { commentName } from "./script.js";
+// import { addForm } from "./script.js";
+// import { addButton } from "./script.js";
+// import { loadingMessage } from "./script.js";
 import { formatDate } from "./format-date.js";
-import { renderComments } from "./render.js";
+import { renderComments } from "./script.js";
+// import { renderComments } from "./script.js";
 
 export let appComments = [];
 
-export function getData() {
 
-    return fetch("https://webdev-hw-api.vercel.app/api/v1/daria/comments", {
+
+export function getData( { token }) {
+
+    return fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
         method: "GET",
+        headers: {
+            Authorization: token,
+        }
     })
         .then((response) => {
             return response.json();
@@ -33,20 +39,17 @@ export function getData() {
 
 }
 
-export const addToServer = (comment) => {
+export const addToServer = ({ newComment, token, loadingMessage, addButton, addForm, commentName, commentText}) => {
 
     const savedName = commentName.value;
     const savedText = commentText.value;
 
-    fetch("https://webdev-hw-api.vercel.app/api/v1/daria/comments", {
+    fetch("https://wedev-api.sky.pro/api/v2/daria/comments", {
         method: "POST",
-        body: JSON.stringify({
-            name: commentName.value
-                .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-            text: commentText.value
-                .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-            forceError: true,
-        }),
+        body: JSON.stringify (newComment),
+        headers: {
+            Authorization: token,
+        }
     })
         .then((response) => {
             if (!response.ok) {
@@ -62,7 +65,7 @@ export const addToServer = (comment) => {
         })
         .then((responseData) => {
             console.log(responseData);
-            return getData().then((comments => renderComments(comments)));
+            return getData({ token }).then((comments => renderComments(comments)));
         })
         .catch((error) => {
             console.log('Ошибка при отправке комментария на сервер:', error);
@@ -84,33 +87,33 @@ export const addToServer = (comment) => {
 
 }
 
-export const addToList = () => {
+export function loginUser ( { login, password }) {
+    return fetch("https://wedev-api.sky.pro/api/user/login", {
+        method: "POST",
+        body: JSON.stringify({
+            login,
+            password
+        }),
+    }).then((response) => {
+        if (response.status === 400) {
+            throw new Error ('Неверный логин или пароль');
+        }
+        return response.json();
+    })
+}
 
-    commentName.classList.remove('error');
-    if (commentName.value === '') {
-        commentName.classList.add('error');
-        return;
-    }
-
-    commentText.classList.remove('error');
-    if (commentText.value === '') {
-        commentText.classList.add('error');
-        return;
-    }
-
-    const newComment = {
-        name: commentName.value
-            .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-        text: commentText.value
-            .replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-        date: formatDate(),
-        like: 0,
-        likeStatus: false,
-    }
-
-    addToServer(newComment);
-
-    commentName.value = '';
-    commentText.value = '';
-    addButton.setAttribute('disabled', '');
+export function addUser ( { login, name, password }) {
+    return fetch("https://wedev-api.sky.pro/api/user", {
+        method: "POST",
+        body: JSON.stringify({
+            login,
+            name,
+            password
+        }),
+    }).then((response) => {
+        if (response.status === 400) {
+            throw new Error ('Такой пользователь уже существует');
+        }
+        return response.json();
+    })
 }

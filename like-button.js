@@ -1,5 +1,5 @@
 
-import { renderComments } from "./render.js";
+import { renderComments } from "./script.js";
 import { appComments } from "./api.js";
 
 export const initLikesButton = () => {
